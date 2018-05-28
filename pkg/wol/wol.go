@@ -70,7 +70,7 @@ func (m *Machine) Wake() {
 	n, err := conn.Write(bs)
 	utils.CheckAndExit(err)
 	if n != 102 {
-		log.Printf("Magic packet sent was %d bytes (expected 102 bytes sent)", n)
+		log.Printf("Magic packet sent was %d bytes (expected 102 bytes sent)\n", n)
 	} else {
 		log.Printf("Magic packet sent successfully to %s\n", m.Mac)
 	}
