@@ -6,6 +6,8 @@ import (
 
 	"log"
 
+	"strings"
+
 	"github.com/mritd/wol/pkg/mp"
 	"github.com/mritd/wol/pkg/utils"
 )
@@ -48,7 +50,12 @@ func (m *Machine) ipFromInterface(iface string) (*net.UDPAddr, error) {
 }
 
 func (m *Machine) Wake() {
-	localAddr, err := m.ipFromInterface(m.BroadcastInterface)
+	var localAddr *net.UDPAddr
+	var err error
+	if strings.TrimSpace(m.BroadcastInterface) != "" {
+		localAddr, err = m.ipFromInterface(m.BroadcastInterface)
+	}
+
 	utils.CheckAndExit(err)
 	broadcastAddr := fmt.Sprintf("%s:%d", m.BroadcastIP, m.Port)
 	udpAddr, err := net.ResolveUDPAddr("udp", broadcastAddr)
