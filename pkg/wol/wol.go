@@ -13,10 +13,11 @@ import (
 )
 
 type Machine struct {
-	Mac                string
-	BroadcastInterface string
-	BroadcastIP        string
-	Port               int
+	Name               string `yml:"name" default:""`
+	Mac                string `yml:"mac" default:""`
+	BroadcastInterface string `yml:"broadcastInterface" default:""`
+	BroadcastIP        string `yml:"broadcastIP" default:"255.255.255.255"`
+	Port               int    `yml:"port" default:"7"`
 }
 
 // Copy from https://github.com/sabhiram/go-wol/blob/4fd002b5515afaf46b3fe9a9b24ef8c245944f36/cmd/wol/wol.go#L39
