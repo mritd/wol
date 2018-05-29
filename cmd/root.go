@@ -24,10 +24,10 @@ import (
 	"fmt"
 	"os"
 
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/go-homedir"
+	"github.com/mritd/wol/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/mritd/wol/pkg/utils"
 )
 
 var cfgFile string
@@ -55,18 +55,17 @@ func init() {
 }
 
 func initConfig() {
-	home, err := homedir.Dir()
-	utils.CheckAndExit(err)
+
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
+		home, err := homedir.Dir()
+		utils.CheckAndExit(err)
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".wol")
 	}
 
 	viper.AutomaticEnv()
+	viper.ReadInConfig()
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
 }
