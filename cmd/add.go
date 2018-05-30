@@ -21,6 +21,8 @@
 package cmd
 
 import (
+	"strings"
+
 	"github.com/mritd/wol/pkg/config"
 	"github.com/spf13/cobra"
 )
@@ -35,7 +37,7 @@ Add machine`,
 			cmd.Help()
 		} else {
 			machine.Name = args[0]
-			machine.Mac = args[1]
+			machine.Mac = strings.ToUpper(args[1])
 			config.Add(machine)
 		}
 	},
