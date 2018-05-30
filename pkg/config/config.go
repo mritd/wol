@@ -8,6 +8,8 @@ import (
 
 	"strings"
 
+	"regexp"
+
 	"github.com/mritd/wol/pkg/utils"
 	"github.com/mritd/wol/pkg/wol"
 	"github.com/spf13/viper"
@@ -57,4 +59,19 @@ func ListLayout(name string) string {
 	} else {
 		return fmt.Sprintf("%-16s", utils.ShortenString(name, 8))
 	}
+}
+
+func FindMac(str string) string {
+	reg := regexp.MustCompile(`^([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})$`)
+	if reg.MatchString(str) {
+		return str
+	}
+	var machines []wol.Machine
+	utils.CheckAndExit(viper.UnmarshalKey("machines", &machines))
+	for _, m := range machines {
+		if str == m.Name {
+			return m.Mac
+		}
+	}
+	return ""
 }

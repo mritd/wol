@@ -21,6 +21,7 @@
 package cmd
 
 import (
+	"github.com/mritd/wol/pkg/config"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +34,7 @@ Wake on LAN`,
 		if len(args) != 1 {
 			cmd.Help()
 		} else {
-			machine.Mac = args[0]
+			machine.Mac = config.FindMac(args[0])
 			machine.Wake()
 		}
 	},
