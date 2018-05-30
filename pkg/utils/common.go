@@ -18,3 +18,11 @@ func CheckAndExit(err error) {
 		os.Exit(1)
 	}
 }
+
+func ShortenString(str string, n int) string {
+	if len(str) <= n {
+		return str
+	} else {
+		return str[:n]
+	}
+}

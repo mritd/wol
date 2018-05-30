@@ -21,8 +21,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/mritd/wol/pkg/config"
 	"github.com/spf13/cobra"
 )
 
@@ -32,11 +31,10 @@ var lsCmd = &cobra.Command{
 	Long: `
 List machines`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ls called")
+		config.List()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
-
 }
