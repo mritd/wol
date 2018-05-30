@@ -4,7 +4,7 @@
 
 ### 使用
 
-![wol.gif](resource/wol.gif)
+![wol.gif](resources/wol.gif)
 
 
 ```sh
