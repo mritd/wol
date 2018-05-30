@@ -21,15 +21,22 @@
 package cmd
 
 import (
+	"github.com/mritd/wol/pkg/config"
 	"github.com/spf13/cobra"
 )
 
 var delCmd = &cobra.Command{
-	Use:   "del",
+	Use:   "del NAME",
 	Short: "Delete machine",
 	Long: `
 Delete machine`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 1 {
+			cmd.Help()
+		} else {
+			machine.Name = args[0]
+			config.Del(machine)
+		}
 	},
 }
 

@@ -21,11 +21,11 @@ func Add(m wol.Machine) {
 	utils.CheckAndExit(viper.WriteConfig())
 }
 
-func Del(name string) {
+func Del(m wol.Machine) {
 	var machines []wol.Machine
 	utils.CheckAndExit(viper.UnmarshalKey("machines", &machines))
-	for i, m := range machines {
-		if name == m.Name {
+	for i, tmpm := range machines {
+		if m.Name == tmpm.Name {
 			machines = append(machines[:i], machines[i+1:]...)
 		}
 	}
