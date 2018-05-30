@@ -21,11 +21,8 @@
 package cmd
 
 import (
-	"github.com/mritd/wol/pkg/wol"
 	"github.com/spf13/cobra"
 )
-
-var machine wol.Machine
 
 var wakeCmd = &cobra.Command{
 	Use:   "wake MAC",
@@ -44,7 +41,4 @@ Wake on LAN`,
 
 func init() {
 	rootCmd.AddCommand(wakeCmd)
-	rootCmd.PersistentFlags().StringVarP(&machine.BroadcastInterface, "interface", "i", "", "Broadcast Interface")
-	rootCmd.PersistentFlags().StringVarP(&machine.BroadcastIP, "ip", "b", "255.255.255.255", "Broadcast IP")
-	rootCmd.PersistentFlags().IntVarP(&machine.Port, "port", "p", 7, "UDP Port")
 }

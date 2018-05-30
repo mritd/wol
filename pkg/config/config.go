@@ -11,16 +11,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Add(name, mac, broadcastInterface, broadcastIP string, port int) {
+func Add(m wol.Machine) {
 	var machines []wol.Machine
 	utils.CheckAndExit(viper.UnmarshalKey("machines", &machines))
-	machines = append(machines, wol.Machine{
-		Name:               name,
-		Mac:                mac,
-		BroadcastIP:        broadcastIP,
-		BroadcastInterface: broadcastInterface,
-		Port:               port,
-	})
+	machines = append(machines, m)
 	viper.Set("machines", machines)
 	utils.CheckAndExit(viper.WriteConfig())
 }
@@ -40,9 +34,9 @@ func Del(name string) {
 func List() {
 	var machines []wol.Machine
 	utils.CheckAndExit(viper.UnmarshalKey("machines", &machines))
-	tpl := `  Name           Mac
-              ------------------------------
-{{range .machines }}{{.Name}}   {{.Mac}}{{end}}`
+	tpl := `Name           Mac
+------------------------------
+{{range .machines }}{{.Name}}{{.Mac}}{{end}}`
 	t, err := template.New("").Parse(tpl)
 	utils.CheckAndExit(err)
 	var buf bytes.Buffer

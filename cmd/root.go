@@ -24,13 +24,18 @@ import (
 	"fmt"
 	"os"
 
+	"path/filepath"
+
 	"github.com/mitchellh/go-homedir"
 	"github.com/mritd/wol/pkg/utils"
+	"github.com/mritd/wol/pkg/wol"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
+
+var machine wol.Machine
 
 var rootCmd = &cobra.Command{
 	Use:   "wol",
@@ -51,6 +56,9 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().StringVarP(&machine.BroadcastInterface, "interface", "i", "", "Broadcast Interface")
+	rootCmd.PersistentFlags().StringVarP(&machine.BroadcastIP, "ip", "b", "255.255.255.255", "Broadcast IP")
+	rootCmd.PersistentFlags().IntVarP(&machine.Port, "port", "p", 7, "UDP Port")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.wol.yaml)")
 }
 
@@ -61,8 +69,14 @@ func initConfig() {
 	} else {
 		home, err := homedir.Dir()
 		utils.CheckAndExit(err)
+		cfgFile := home + string(filepath.Separator) + ".wol.yaml"
+		if _, err = os.Stat(cfgFile); err != nil {
+			os.Create(cfgFile)
+		}
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".wol")
+		viper.SetConfigType("yaml")
+
 	}
 
 	viper.AutomaticEnv()

@@ -21,16 +21,23 @@
 package cmd
 
 import (
+	"github.com/mritd/wol/pkg/config"
 	"github.com/spf13/cobra"
 )
 
 var addCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add NAME Mac",
 	Short: "Add machine",
 	Long: `
 Add machine`,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		if len(args) != 2 {
+			cmd.Help()
+		} else {
+			machine.Name = args[0]
+			machine.Mac = args[1]
+			config.Add(machine)
+		}
 	},
 }
 
