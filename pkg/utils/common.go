@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"log"
+	"fmt"
 	"os"
 )
 
 func CheckErr(err error) bool {
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return false
 	}
 	return true
@@ -25,4 +25,9 @@ func ShortenString(str string, n int) string {
 	} else {
 		return str[:n]
 	}
+}
+
+func Exit(msg string, c int) {
+	fmt.Println(msg)
+	os.Exit(c)
 }

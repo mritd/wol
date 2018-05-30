@@ -18,6 +18,11 @@ import (
 func Add(m wol.Machine) {
 	var machines []wol.Machine
 	utils.CheckAndExit(viper.UnmarshalKey("machines", &machines))
+	for _, t := range machines {
+		if m.Name == t.Name {
+			utils.Exit("machine name is used!", 1)
+		}
+	}
 	machines = append(machines, m)
 	viper.Set("machines", machines)
 	utils.CheckAndExit(viper.WriteConfig())
@@ -26,8 +31,8 @@ func Add(m wol.Machine) {
 func Del(m wol.Machine) {
 	var machines []wol.Machine
 	utils.CheckAndExit(viper.UnmarshalKey("machines", &machines))
-	for i, tmpm := range machines {
-		if m.Name == tmpm.Name {
+	for i, t := range machines {
+		if m.Name == t.Name {
 			machines = append(machines[:i], machines[i+1:]...)
 		}
 	}
