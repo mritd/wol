@@ -62,7 +62,7 @@ func ListLayout(name string) string {
 	if len(name) < 16 {
 		return fmt.Sprintf("%-16s", name)
 	} else {
-		return fmt.Sprintf("%-16s", utils.ShortenString(name, 8))
+		return fmt.Sprintf("%-16s", utils.ShortenString(name, 16))
 	}
 }
 
