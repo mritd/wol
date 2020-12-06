@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mritd/logger v0.0.2
+	github.com/mritd/logger v0.0.3-0.20201206150506-374a65ed1531
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 	gopkg.in/yaml.v2 v2.4.0
