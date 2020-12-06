@@ -54,7 +54,8 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			if c.String("name") == "" && c.String("mac") == "" {
+			dev := c.Args().First()
+			if dev == "" {
 				return cli.ShowAppHelp(c)
 			}
 
@@ -64,8 +65,8 @@ func main() {
 				return err
 			}
 			m := &Machine{
-				Name: c.String("name"),
-				Mac:  c.String("mac"),
+				Name: dev,
+				Mac:  dev,
 			}
 			_, fm := cfg.FindMachine(m)
 			if fm == nil {
@@ -77,6 +78,7 @@ func main() {
 			addCmd(),
 			delCmd(),
 			printCmd(),
+			exampleCmd(),
 		},
 	}
 
@@ -188,6 +190,16 @@ func printCmd() *cli.Command {
 				return err
 			}
 			return cfg.Print()
+		},
+	}
+}
+func exampleCmd() *cli.Command {
+	return &cli.Command{
+		Name:  "example",
+		Usage: "print example config",
+		Action: func(c *cli.Context) error {
+			fmt.Println(ExampleConfig())
+			return nil
 		},
 	}
 }

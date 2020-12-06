@@ -18,9 +18,9 @@ import (
 type Machine struct {
 	Name               string `yaml:"name"`
 	Mac                string `yaml:"mac"`
-	BroadcastInterface string `yaml:"broadcast_interface"`
-	BroadcastIP        string `yaml:"broadcast_ip"`
-	Port               int    `yaml:"port"`
+	BroadcastInterface string `yaml:"broadcast_interface,omitempty"`
+	BroadcastIP        string `yaml:"broadcast_ip,omitempty"`
+	Port               int    `yaml:"port,omitempty"`
 }
 
 func (m *Machine) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -115,9 +115,9 @@ func (m *Machine) Wake() error {
 		return err
 	}
 	if n != 102 {
-		logger.Warnf("Magic packet sent was %d bytes (expected 102 bytes sent)\n", n)
+		logger.Warnf("Magic packet sent was %d bytes (expected 102 bytes sent)", n)
 	} else {
-		logger.Infof("Magic packet sent successfully to %s\n", m.Mac)
+		logger.Infof("Magic packet sent successfully to %s", m.Mac)
 	}
 	return nil
 }
@@ -232,4 +232,16 @@ func ListLayout(name string) string {
 	} else {
 		return name[:16]
 	}
+}
+
+func ExampleConfig() string {
+	out, _ := yaml.Marshal(WolConfig{
+		Machines: []*Machine{
+			{
+				Name: "iMac",
+				Mac:  "e0:d5:5e:6e:30:c9",
+			},
+		},
+	})
+	return string(out)
 }
