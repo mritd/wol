@@ -46,12 +46,12 @@ func main() {
 			&cli.StringFlag{
 				Name:    "name",
 				Aliases: []string{"n"},
-				Usage:   "machine name",
+				Usage:   "device name",
 			},
 			&cli.StringFlag{
 				Name:    "mac",
 				Aliases: []string{"m"},
-				Usage:   "machine mac address",
+				Usage:   "device mac address",
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -75,18 +75,18 @@ func main() {
 func addCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "add",
-		Usage: "add machine",
+		Usage: "add device",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "name",
 				Aliases:  []string{"n"},
-				Usage:    "machine name",
+				Usage:    "device name",
 				Required: true,
 			},
 			&cli.StringFlag{
 				Name:     "mac",
 				Aliases:  []string{"m"},
-				Usage:    "machine mac address",
+				Usage:    "device mac address",
 				Required: true,
 			},
 			&cli.StringFlag{
@@ -118,14 +118,14 @@ func addCmd() *cli.Command {
 				return err
 			}
 
-			m := &Machine{
+			d := &Device{
 				Name:               c.String("name"),
 				Mac:                c.String("mac"),
 				BroadcastInterface: c.String("interface"),
 				BroadcastIP:        c.String("ip"),
 				Port:               c.Int("port"),
 			}
-			return cfg.AddMachine(m)
+			return cfg.AddDevice(d)
 		},
 	}
 }
@@ -133,33 +133,25 @@ func addCmd() *cli.Command {
 func delCmd() *cli.Command {
 	return &cli.Command{
 		Name:         "del",
-		Usage:        "del machine",
+		Usage:        "del device",
 		BashComplete: bashComplete,
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:     "name",
-				Aliases:  []string{"n"},
-				Usage:    "machine name",
-				Required: true,
-			},
-			&cli.StringFlag{
-				Name:     "mac",
-				Aliases:  []string{"m"},
-				Usage:    "machine mac address",
-				Required: true,
-			},
-		},
 		Action: func(c *cli.Context) error {
+			if c.NArg() != 1 {
+				return cli.ShowAppHelp(c)
+			}
+			dev := c.Args().First()
+
 			var cfg WolConfig
 			err := cfg.LoadFrom(c.String("config"))
 			if err != nil {
 				return err
 			}
-			m := &Machine{
-				Name: c.String("name"),
-				Mac:  c.String("mac"),
+
+			d := &Device{
+				Name: dev,
+				Mac:  dev,
 			}
-			return cfg.DelMachine(m)
+			return cfg.DelDevice(d)
 		},
 	}
 }
@@ -167,7 +159,7 @@ func delCmd() *cli.Command {
 func printCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "print",
-		Usage: "print machines",
+		Usage: "print devices",
 		Action: func(c *cli.Context) error {
 			var cfg WolConfig
 			err := cfg.LoadFrom(c.String("config"))
@@ -182,12 +174,13 @@ func printCmd() *cli.Command {
 func wakeCmd() *cli.Command {
 	return &cli.Command{
 		Name:         "wake",
-		Usage:        "wake machine",
+		Usage:        "wake device",
 		BashComplete: bashComplete,
 		Action: func(c *cli.Context) error {
 			if c.NArg() != 1 {
 				return cli.ShowAppHelp(c)
 			}
+			dev := c.Args().First()
 
 			var cfg WolConfig
 			err := cfg.LoadFrom(c.String("config"))
@@ -195,16 +188,14 @@ func wakeCmd() *cli.Command {
 				return err
 			}
 
-			dev := c.Args().First()
-			m := &Machine{
+			_, device := cfg.FindDevice(&Device{
 				Name: dev,
 				Mac:  dev,
+			})
+			if device == nil {
+				return fmt.Errorf("not found device [%s]", dev)
 			}
-			_, fm := cfg.FindMachine(m)
-			if fm == nil {
-				return fmt.Errorf("not found machine [%v]", m)
-			}
-			return fm.Wake()
+			return device.Wake()
 		},
 	}
 }
@@ -231,7 +222,7 @@ func bashComplete(c *cli.Context) {
 		logger.Error(err)
 		return
 	}
-	for _, m := range cfg.Machines {
-		fmt.Println(m.Name)
+	for _, dev := range cfg.Devices {
+		fmt.Println(dev.Name)
 	}
 }

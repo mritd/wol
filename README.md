@@ -5,7 +5,7 @@
 ### 使用
 
 ```sh
-➜ ~ wol --help
+➜ wol --help
 NAME:
    wol - Wake-on-LAN TOOL
 
@@ -13,23 +13,23 @@ USAGE:
    wol [global options] command [command options] [arguments...]
 
 VERSION:
-   v1.0.0 2020-12-07 15:47:57 858f64b34d7cfcb041e07c482b121a7c0d761d0a
+   v1.0.0 2020-12-07 16:26:16 b36316e772b9ca3abecb6b34fd05797ccbd98044
 
 AUTHOR:
    mritd <mritd@linux.com>
 
 COMMANDS:
-   add      add machine
-   del      del machine
-   wake     wake machine
-   print    print machines
+   add      add device
+   del      del device
+   wake     wake device
+   print    print devices
    example  print example config
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --config value, -c value  wol config (default: "/Users/bleem/.wol.yaml") [$WOL_CONFIG]
-   --name value, -n value    machine name
-   --mac value, -m value     machine mac address
+   --config value, -c value  wol config (default: "$HOME/.wol.yaml") [$WOL_CONFIG]
+   --name value, -n value    device name
+   --mac value, -m value     device mac address
    --help, -h                show help (default: false)
    --version, -v             print the version (default: false)
 

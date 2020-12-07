@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-type Machine struct {
+type Device struct {
 	Name               string `yaml:"name"`
 	Mac                string `yaml:"mac"`
 	BroadcastInterface string `yaml:"broadcast_interface,omitempty"`
@@ -23,9 +23,9 @@ type Machine struct {
 	Port               int    `yaml:"port,omitempty"`
 }
 
-func (m *Machine) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type rawMachine Machine
-	raw := rawMachine{}
+func (d *Device) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	type rawDevice Device
+	raw := rawDevice{}
 	if err := unmarshal(&raw); err != nil {
 		return err
 	}
@@ -37,23 +37,23 @@ func (m *Machine) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		raw.Port = 7
 	}
 
-	*m = Machine(raw)
+	*d = Device(raw)
 	return nil
 }
 
-func (m *Machine) MarshalYAML() (interface{}, error) {
-	if m.BroadcastIP == "" {
-		m.BroadcastIP = "255.255.255.255"
+func (d *Device) MarshalYAML() (interface{}, error) {
+	if d.BroadcastIP == "" {
+		d.BroadcastIP = "255.255.255.255"
 	}
-	if m.Port == 0 {
-		m.Port = 7
+	if d.Port == 0 {
+		d.Port = 7
 	}
-	m.Mac = strings.ToUpper(m.Mac)
-	return m, nil
+	d.Mac = strings.ToUpper(d.Mac)
+	return d, nil
 }
 
 // Copy from https://github.com/sabhiram/go-wol/blob/4fd002b5515afaf46b3fe9a9b24ef8c245944f36/cmd/wol/wol.go#L39
-func (m *Machine) ipFromInterface(iface string) (*net.UDPAddr, error) {
+func (d *Device) ipFromInterface(iface string) (*net.UDPAddr, error) {
 	ief, err := net.InterfaceByName(iface)
 	if err != nil {
 		return nil, err
@@ -82,22 +82,22 @@ func (m *Machine) ipFromInterface(iface string) (*net.UDPAddr, error) {
 	return nil, fmt.Errorf("no address associated with interface %s", iface)
 }
 
-func (m *Machine) Wake() error {
+func (d *Device) Wake() error {
 	var localAddr *net.UDPAddr
 	var err error
-	if strings.TrimSpace(m.BroadcastInterface) != "" {
-		localAddr, err = m.ipFromInterface(m.BroadcastInterface)
+	if strings.TrimSpace(d.BroadcastInterface) != "" {
+		localAddr, err = d.ipFromInterface(d.BroadcastInterface)
 		if err != nil {
 			return err
 		}
 	}
 
-	broadcastAddr := fmt.Sprintf("%s:%d", m.BroadcastIP, m.Port)
+	broadcastAddr := fmt.Sprintf("%s:%d", d.BroadcastIP, d.Port)
 	udpAddr, err := net.ResolveUDPAddr("udp", broadcastAddr)
 	if err != nil {
 		return err
 	}
-	p, err := New(m.Mac)
+	p, err := New(d.Mac)
 	if err != nil {
 		return err
 	}
@@ -117,14 +117,14 @@ func (m *Machine) Wake() error {
 	if n != 102 {
 		logger.Warnf("Magic packet sent was %d bytes (expected 102 bytes sent)", n)
 	} else {
-		logger.Infof("Magic packet sent successfully to %s", m.Mac)
+		logger.Infof("Magic packet sent successfully to %s", d.Mac)
 	}
 	return nil
 }
 
 type WolConfig struct {
 	configPath string
-	Machines   []*Machine `yaml:"machines"`
+	Devices    []*Device `yaml:"devices"`
 }
 
 func (cfg *WolConfig) SetConfigPath(configPath string) {
@@ -169,38 +169,38 @@ func (cfg *WolConfig) LoadFrom(filePath string) error {
 	return cfg.Load()
 }
 
-func (cfg *WolConfig) FindMachine(m *Machine) (int, *Machine) {
-	for i, ma := range cfg.Machines {
-		if m.Name == ma.Name {
-			return i, ma
+func (cfg *WolConfig) FindDevice(d *Device) (int, *Device) {
+	for i, dev := range cfg.Devices {
+		if d.Name == dev.Name {
+			return i, dev
 		}
 	}
 
-	for i, ma := range cfg.Machines {
-		if m.Mac == ma.Mac {
-			return i, ma
+	for i, dev := range cfg.Devices {
+		if d.Mac == dev.Mac {
+			return i, dev
 		}
 	}
 	return 0, nil
 }
 
-func (cfg *WolConfig) AddMachine(m *Machine) error {
-	_, fm := cfg.FindMachine(m)
+func (cfg *WolConfig) AddDevice(d *Device) error {
+	_, fm := cfg.FindDevice(d)
 	if fm != nil {
-		return fmt.Errorf("machine [%v] already exist", m)
+		return fmt.Errorf("device [%v] already exist", d)
 	}
-	cfg.Machines = append(cfg.Machines, m)
+	cfg.Devices = append(cfg.Devices, d)
 	return cfg.Write()
 }
 
-func (cfg *WolConfig) DelMachine(m *Machine) error {
-	idx, fm := cfg.FindMachine(m)
+func (cfg *WolConfig) DelDevice(d *Device) error {
+	idx, fm := cfg.FindDevice(d)
 	if fm == nil {
-		return fmt.Errorf("not found machine [%v]", m)
+		return fmt.Errorf("not found device [%v]", d)
 	}
-	cfg.Machines[idx] = cfg.Machines[len(cfg.Machines)-1]
-	cfg.Machines[len(cfg.Machines)-1] = nil
-	cfg.Machines = cfg.Machines[:len(cfg.Machines)-1]
+	cfg.Devices[idx] = cfg.Devices[len(cfg.Devices)-1]
+	cfg.Devices[len(cfg.Devices)-1] = nil
+	cfg.Devices = cfg.Devices[:len(cfg.Devices)-1]
 	return cfg.Write()
 }
 
@@ -218,7 +218,7 @@ func (cfg *WolConfig) Print() error {
 	}
 
 	var buf bytes.Buffer
-	err = t.Execute(&buf, cfg.Machines)
+	err = t.Execute(&buf, cfg.Devices)
 	if err != nil {
 		return err
 	}
@@ -236,7 +236,7 @@ func ListLayout(name string) string {
 
 func ExampleConfig() string {
 	out, _ := yaml.Marshal(WolConfig{
-		Machines: []*Machine{
+		Devices: []*Device{
 			{
 				Name: "iMac",
 				Mac:  "e0:d5:5e:6e:30:c9",
