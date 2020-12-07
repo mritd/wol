@@ -33,7 +33,23 @@ func main() {
 				Email: "mritd@linux.com",
 			},
 		},
-		Copyright: "Copyright (c) 2020 mritd, All rights reserved.",
+		Copyright:            "Copyright (c) 2020 mritd, All rights reserved.",
+		EnableBashCompletion: true,
+		BashComplete: func(c *cli.Context) {
+			if c.NArg() > 0 {
+				return
+			}
+
+			var cfg WolConfig
+			err := cfg.LoadFrom(c.String("config"))
+			if err != nil {
+				logger.Error(err)
+				return
+			}
+			for _, m := range cfg.Machines {
+				fmt.Println(m.Name)
+			}
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "config",
