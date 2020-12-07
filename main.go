@@ -132,8 +132,9 @@ func addCmd() *cli.Command {
 
 func delCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "del",
-		Usage: "del machine",
+		Name:         "del",
+		Usage:        "del machine",
+		BashComplete: bashComplete,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "name",
@@ -180,23 +181,9 @@ func printCmd() *cli.Command {
 
 func wakeCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "wake",
-		Usage: "wake machine",
-		BashComplete: func(c *cli.Context) {
-			if c.NArg() > 0 {
-				return
-			}
-
-			var cfg WolConfig
-			err := cfg.LoadFrom(c.String("config"))
-			if err != nil {
-				logger.Error(err)
-				return
-			}
-			for _, m := range cfg.Machines {
-				fmt.Println(m.Name)
-			}
-		},
+		Name:         "wake",
+		Usage:        "wake machine",
+		BashComplete: bashComplete,
 		Action: func(c *cli.Context) error {
 			if c.NArg() != 1 {
 				return cli.ShowAppHelp(c)
@@ -230,5 +217,21 @@ func exampleCmd() *cli.Command {
 			fmt.Println(ExampleConfig())
 			return nil
 		},
+	}
+}
+
+func bashComplete(c *cli.Context) {
+	if c.NArg() > 0 {
+		return
+	}
+
+	var cfg WolConfig
+	err := cfg.LoadFrom(c.String("config"))
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	for _, m := range cfg.Machines {
+		fmt.Println(m.Name)
 	}
 }
