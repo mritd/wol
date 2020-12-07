@@ -39,7 +39,7 @@ COPYRIGHT:
 
 ### 配置
 
-可以通过 `wol example > ~/.wol.yaml` 生成样例配置文件，也可以通过 `--config` 选项指定配置文件位置；默认情况下 wol 只读取 `$HOME/wol.yaml` 配置文件。
+可以通过 `wol example > ~/.wol.yaml` 生成样例配置文件，也可以通过 `--config` 选项指定配置文件位置；默认情况下 wol 只读取 `$HOME/.wol.yaml` 配置文件。
 
 ### Bash Completion
 
