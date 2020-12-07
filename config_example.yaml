@@ -1,0 +1,6 @@
+machines:
+- name: iMac
+  mac: E0:D5:3E:6E:30:C9
+  broadcast_ip: 255.255.255.255
+  port: 7
+
