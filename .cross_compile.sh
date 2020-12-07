@@ -21,9 +21,9 @@ for pl in ${PLATFORMS}; do
 
     echo "build => ${TARGET}"
     go build -trimpath -o ${TARGET} \
-            -ldflags    "-X 'main.Version=${BUILD_VERSION}' \
-                        -X 'main.BuildDate=${BUILD_DATE}' \
-                        -X 'main.CommitID=${COMMIT_SHA1}'\
+            -ldflags    "-X 'main.version=${BUILD_VERSION}' \
+                        -X 'main.buildDate=${BUILD_DATE}' \
+                        -X 'main.commitID=${COMMIT_SHA1}'\
                         -w -s"
 done
 
