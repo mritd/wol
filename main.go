@@ -35,21 +35,6 @@ func main() {
 		},
 		Copyright:            "Copyright (c) 2020 mritd, All rights reserved.",
 		EnableBashCompletion: true,
-		BashComplete: func(c *cli.Context) {
-			if c.NArg() > 0 {
-				return
-			}
-
-			var cfg WolConfig
-			err := cfg.LoadFrom(c.String("config"))
-			if err != nil {
-				logger.Error(err)
-				return
-			}
-			for _, m := range cfg.Machines {
-				fmt.Println(m.Name)
-			}
-		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "config",
@@ -70,29 +55,12 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			dev := c.Args().First()
-			if dev == "" {
-				return cli.ShowAppHelp(c)
-			}
-
-			var cfg WolConfig
-			err := cfg.LoadFrom(c.String("config"))
-			if err != nil {
-				return err
-			}
-			m := &Machine{
-				Name: dev,
-				Mac:  dev,
-			}
-			_, fm := cfg.FindMachine(m)
-			if fm == nil {
-				return fmt.Errorf("not found machine [%v]", m)
-			}
-			return fm.Wake()
+			return cli.ShowAppHelp(c)
 		},
 		Commands: []*cli.Command{
 			addCmd(),
 			delCmd(),
+			wakeCmd(),
 			printCmd(),
 			exampleCmd(),
 		},
@@ -209,6 +177,51 @@ func printCmd() *cli.Command {
 		},
 	}
 }
+
+func wakeCmd() *cli.Command {
+	return &cli.Command{
+		Name:  "wake",
+		Usage: "wake machine",
+		BashComplete: func(c *cli.Context) {
+			if c.NArg() > 0 {
+				return
+			}
+
+			var cfg WolConfig
+			err := cfg.LoadFrom(c.String("config"))
+			if err != nil {
+				logger.Error(err)
+				return
+			}
+			for _, m := range cfg.Machines {
+				fmt.Println(m.Name)
+			}
+		},
+		Action: func(c *cli.Context) error {
+			if c.NArg() != 1 {
+				return cli.ShowAppHelp(c)
+			}
+
+			var cfg WolConfig
+			err := cfg.LoadFrom(c.String("config"))
+			if err != nil {
+				return err
+			}
+
+			dev := c.Args().First()
+			m := &Machine{
+				Name: dev,
+				Mac:  dev,
+			}
+			_, fm := cfg.FindMachine(m)
+			if fm == nil {
+				return fmt.Errorf("not found machine [%v]", m)
+			}
+			return fm.Wake()
+		},
+	}
+}
+
 func exampleCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "example",
