@@ -127,6 +127,8 @@ devices:
 
 #### bash 用户
 
+![bash_autocomplete.jpg](images/bash_autocomplete.jpg)
+
 - 下载 `autocomplete/bash_autocomplete` 文件到任意位置
 - 确保已经安装好了 `wol` 工具(在 `PATH` 中可以找到)
 - 在 `~/.bashrc` 中添加 `PROG=wol source path/to/cli/autocomplete/bash_autocomplete`(路径请自行替换)
@@ -134,6 +136,8 @@ devices:
 - 最后执行 `wol` + `tab` 进行测试是否有智能提示
 
 #### zsh 用户
+
+![zsh_autocomplete.jpg](images/zsh_autocomplete.jpg)
 
 注意: 以下仅在 ohmyzsh 测试成功，标准 zsh 理论上也兼容
 
