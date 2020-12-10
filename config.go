@@ -41,17 +41,6 @@ func (d *Device) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (d *Device) MarshalYAML() (interface{}, error) {
-	if d.BroadcastIP == "" {
-		d.BroadcastIP = "255.255.255.255"
-	}
-	if d.Port == 0 {
-		d.Port = 7
-	}
-	d.Mac = strings.ToUpper(d.Mac)
-	return d, nil
-}
-
 // Copy from https://github.com/sabhiram/go-wol/blob/4fd002b5515afaf46b3fe9a9b24ef8c245944f36/cmd/wol/wol.go#L39
 func (d *Device) ipFromInterface(iface string) (*net.UDPAddr, error) {
 	ief, err := net.InterfaceByName(iface)
